@@ -10,7 +10,9 @@
     <meta name="description" content="">
     <title>Reset Password</title>
     <!-- Bootstrap core CSS -->
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+          crossorigin="anonymous">
 
     <meta name="theme-color" content="#563d7c">
 
@@ -42,7 +44,7 @@
     </div>
 
     <form:form modelAttribute="password" method="post">
-        <form:errors path="*" cssClass="errorblock" element="div" />
+        <form:errors path="*" cssClass="errorblock" element="div"/>
         <div><label> Username : <input type="text" name="username"/> </label></div>
         <div><label> Email : <input type="text" name="email"/> </label></div>
         <input type="submit" class="btn btn-lg btn-primary" role="button" value="Reset Password"/>

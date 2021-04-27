@@ -6,29 +6,30 @@ import org.springframework.context.ApplicationEvent;
 import javax.validation.Valid;
 
 public class OnPasswordResetEvent extends ApplicationEvent {
-    private String appUrl;
-    private Password password;
 
-    public OnPasswordResetEvent(Password password, String appUrl) {
-        super(password);
+  private String appUrl;
+  private Password password;
 
-        this.appUrl = appUrl;
-        this.password = password;
-    }
+  public OnPasswordResetEvent(Password password, String appUrl) {
+    super(password);
 
-    public String getAppUrl() {
-        return appUrl;
-    }
+    this.appUrl = appUrl;
+    this.password = password;
+  }
 
-    public void setAppUrl(String appUrl) {
-        this.appUrl = appUrl;
-    }
+  public String getAppUrl() {
+    return appUrl;
+  }
 
-    public Password getPassword() {
-        return password;
-    }
+  public void setAppUrl(String appUrl) {
+    this.appUrl = appUrl;
+  }
 
-    public void setPassword(Password password) {
-        this.password = password;
-    }
+  public Password getPassword() {
+    return password;
+  }
+
+  public void setPassword(Password password) {
+    this.password = password;
+  }
 }

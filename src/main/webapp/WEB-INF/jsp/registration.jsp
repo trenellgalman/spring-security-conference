@@ -9,7 +9,9 @@
     <meta name="description" content="">
     <title>Registration</title>
     <!-- Bootstrap core CSS -->
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+          crossorigin="anonymous">
 
     <meta name="theme-color" content="#563d7c">
 
@@ -31,29 +33,29 @@
     <link href="navbar-top.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-        <a class="navbar-brand" href="#">Get Started</a>
-    </nav>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    <a class="navbar-brand" href="#">Get Started</a>
+</nav>
 
-    <div class="container">
-        <div>
-            <h1>Registration</h1>
-        </div>
-
-        <form:form modelAttribute="registration">
-            <form:errors path="*" cssClass="errorblock" element="div" />
-            <label for="textinput1">
-                Enter Registration:
-            </label>
-            <form:input path="name" cssErrorClass="error" />
-            <form:errors path="name" cssClass="error" />
-            <br/>
-            <input type="submit" class="btn btn-lg btn-primary" role="button" value="Add Registration"/>
-        </form:form>
-
-        <div class="control-group">
-        </div>
+<div class="container">
+    <div>
+        <h1>Registration</h1>
     </div>
+
+    <form:form modelAttribute="registration">
+        <form:errors path="*" cssClass="errorblock" element="div"/>
+        <label for="textinput1">
+            Enter Registration:
+        </label>
+        <form:input path="name" cssErrorClass="error"/>
+        <form:errors path="name" cssClass="error"/>
+        <br/>
+        <input type="submit" class="btn btn-lg btn-primary" role="button" value="Add Registration"/>
+    </form:form>
+
+    <div class="control-group">
+    </div>
+</div>
 </body>
 </html>
 

@@ -5,10 +5,10 @@ import com.pluralsight.conference.model.ResetToken;
 
 public interface PasswordService {
 
-    void createResetToken(Password password, String token);
+  void createResetToken(Password password, String token);
 
-    boolean confirmResetToken(ResetToken token);
+  boolean confirmResetToken(ResetToken token);
 
-    void update(Password password, String username);
+  void update(Password password, String username);
 
 }

@@ -1,7 +1,8 @@
 package com.pluralsight.conference;
 
-import com.pluralsight.conference.service.ConferenceUserDetailsContextMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.sql.DataSource;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,73 +16,78 @@ import org.springframework.security.web.authentication.rememberme.JdbcTokenRepos
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import javax.sql.DataSource;
-
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity (
-   prePostEnabled = true,
-   securedEnabled = true,
-   jsr250Enabled = true
+@EnableGlobalMethodSecurity(
+    prePostEnabled = true,
+    securedEnabled = true,
+    jsr250Enabled = true
 )
-public class ConferenceSecurityConfig extends WebSecurityConfigurerAdapter {
+public class ConferenceSecurityConfig extends WebSecurityConfigurerAdapter implements
+    ApplicationContextAware {
 
-    @Autowired
-    private DataSource dataSource;
+  private ApplicationContext applicationContext;
 
-    @Autowired
-    private ConferenceUserDetailsContextMapper ctxMapper;
+  @Override
+  public void setApplicationContext(ApplicationContext context) {
+    this.applicationContext = context;
+  }
 
-    @Override
-    protected void configure(final HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                //.antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/anonymous*").anonymous()
-                .antMatchers("/login*").permitAll()
-                .antMatchers("/account*").permitAll()
-                .antMatchers("/password*").permitAll()
-                .antMatchers("/assets/css/**", "assets/js/**", "/images/**").permitAll()
-                .antMatchers("/index*").permitAll()
-                .anyRequest().authenticated()
+  @Override
+  protected void configure(final HttpSecurity http) throws Exception {
+    DataSource dataSource = applicationContext.getBean(DataSource.class);
 
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .loginProcessingUrl("/perform_login")
-                .failureUrl("/login?error=true")
-                .permitAll()
-                .defaultSuccessUrl("/", true)
+    http
+        .authorizeRequests()
+        //.antMatchers("/admin/**").hasRole("ADMIN")
+        .antMatchers("/anonymous*").anonymous()
+        .antMatchers("/login*").permitAll()
+        .antMatchers("/account*").permitAll()
+        .antMatchers("/password*").permitAll()
+        .antMatchers("/assets/css/**", "assets/js/**", "/images/**").permitAll()
+        .antMatchers("/index*").permitAll()
+        .anyRequest().authenticated()
 
-                .and()
-                .rememberMe()
-                .key("superSecretKey")
-                .tokenRepository(tokenRepository())
+        .and()
+        .formLogin()
+        .loginPage("/login")
+        .loginProcessingUrl("/perform_login")
+        .failureUrl("/login?error=true")
+        .permitAll()
+        .defaultSuccessUrl("/", true)
 
-                .and()
-                .logout()
-                .logoutSuccessUrl("/login?logout=true")
-                .logoutRequestMatcher(new AntPathRequestMatcher("/perform_logout", "GET"))
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll();
+        .and()
+        .rememberMe()
+        .key("superSecretKey")
+        .tokenRepository(tokenRepository(dataSource))
 
-    }
+        .and()
+        .logout()
+        .logoutSuccessUrl("/login?logout=true")
+        .logoutRequestMatcher(new AntPathRequestMatcher("/perform_logout", "GET"))
+        .invalidateHttpSession(true)
+        .deleteCookies("JSESSIONID")
+        .permitAll();
 
-    @Bean
-    public PersistentTokenRepository tokenRepository () {
-        JdbcTokenRepositoryImpl token = new JdbcTokenRepositoryImpl();
-        token.setDataSource(dataSource);
-        return token;
-    }
+  }
 
-    @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        //auth.inMemoryAuthentication()
-        //        .withUser("bryan").password(passwordEncoder().encode("pass")).roles("USER");
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .passwordEncoder(passwordEncoder());
+  @Bean
+  public PersistentTokenRepository tokenRepository(DataSource dataSource) {
+    JdbcTokenRepositoryImpl token = new JdbcTokenRepositoryImpl();
+    token.setDataSource(dataSource);
+    return token;
+  }
+
+  @Override
+  protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+    DataSource dataSource = applicationContext.getBean(DataSource.class);
+
+    // auth.inMemoryAuthentication()
+    //        .withUser("bryan").password(passwordEncoder().encode("pass")).roles("USER");
+
+    auth.jdbcAuthentication()
+        .dataSource(dataSource)
+        .passwordEncoder(passwordEncoder());
 
         /*
         auth.ldapAuthentication()
@@ -97,11 +103,10 @@ public class ConferenceSecurityConfig extends WebSecurityConfigurerAdapter {
                 .userDetailsContextMapper(ctxMapper);
                 */
 
-    }
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

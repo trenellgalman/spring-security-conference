@@ -4,21 +4,22 @@ import com.pluralsight.conference.model.Account;
 import org.springframework.context.ApplicationEvent;
 
 public class OnCreateAccountEvent extends ApplicationEvent {
-    private String appUrl;
-    private Account account;
 
-    public OnCreateAccountEvent(Account account, String appUrl) {
-        super(account);
+  private String appUrl;
+  private Account account;
 
-        this.account = account;
-        this.appUrl = appUrl;
-    }
+  public OnCreateAccountEvent(Account account, String appUrl) {
+    super(account);
 
-    public String getAppUrl() {
-        return appUrl;
-    }
+    this.account = account;
+    this.appUrl = appUrl;
+  }
 
-    public Account getAccount() {
-        return account;
-    }
+  public String getAppUrl() {
+    return appUrl;
+  }
+
+  public Account getAccount() {
+    return account;
+  }
 }

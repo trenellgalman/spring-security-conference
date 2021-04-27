@@ -1,9 +1,10 @@
 package com.pluralsight.conference.service;
 
 import com.pluralsight.conference.model.ConferenceUserDetails;
+import java.util.Collection;
+import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,44 +12,36 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-
 @Service
 public class ConferenceUserDetailsContextMapper implements UserDetailsContextMapper {
 
-    @Autowired
-    private DataSource dataSource;
+  private static final String LOAD_USER_BY_USERNAME_QUERY = "select username, password, " +
+      "enabled, nickname from users where username = ?";
 
-    private static final String loadUserByUsernameQuery = "select username, password, " +
-            "enabled, nickname from users where username = ?";
+  private final JdbcTemplate template;
 
-    @Override
-    public UserDetails mapUserFromContext(DirContextOperations dirContextOperations, String s, Collection<? extends GrantedAuthority> collection) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+  @Autowired
+  public ConferenceUserDetailsContextMapper(JdbcTemplate template) {
+    this.template = template;
+  }
 
-        final ConferenceUserDetails userDetails = new ConferenceUserDetails(
-                dirContextOperations.getStringAttribute("uid"),
-                "fake",
-                Collections.EMPTY_LIST);
+  @Override
+  public UserDetails mapUserFromContext(DirContextOperations dirContextOperations, String s,
+      Collection<? extends GrantedAuthority> collection) {
+    final ConferenceUserDetails userDetails =
+        new ConferenceUserDetails(dirContextOperations.getStringAttribute("uid"),
+        "fake",
+        Collections.emptyList());
 
-        jdbcTemplate.queryForObject(loadUserByUsernameQuery, new RowMapper<ConferenceUserDetails>() {
+    template.queryForObject(LOAD_USER_BY_USERNAME_QUERY, (resultSet, i) -> {
+      userDetails.setNickname(resultSet.getString("nickname"));
+      return userDetails;
+    }, dirContextOperations.getStringAttribute("uid"));
 
-            @Override
-            public ConferenceUserDetails mapRow(ResultSet resultSet, int i) throws SQLException {
-                userDetails.setNickname(resultSet.getString("nickname"));
-                return userDetails;
-            }
-        }, dirContextOperations.getStringAttribute("uid"));
+    return userDetails;
+  }
 
-        return userDetails;
-    }
-
-    @Override
-    public void mapUserToContext(UserDetails userDetails, DirContextAdapter dirContextAdapter) {
-
-    }
+  @Override
+  public void mapUserToContext(UserDetails userDetails, DirContextAdapter dirContextAdapter) {
+  }
 }

@@ -13,36 +13,36 @@ import java.util.UUID;
 @Component
 public class AccountListener implements ApplicationListener<OnCreateAccountEvent> {
 
-    private String serverUrl = "http://localhost:8080/";
+  private String serverUrl = "http://localhost:8080/";
 
-    @Autowired
-    private JavaMailSender mailSender;
+  @Autowired
+  private JavaMailSender mailSender;
 
-    @Autowired
-    private AccountService accountService;
+  @Autowired
+  private AccountService accountService;
 
-    @Override
-    public void onApplicationEvent(OnCreateAccountEvent event) {
-        this.confirmCreateAccount(event);
-    }
+  @Override
+  public void onApplicationEvent(OnCreateAccountEvent event) {
+    this.confirmCreateAccount(event);
+  }
 
-    private void confirmCreateAccount(OnCreateAccountEvent event) {
-        //get the account
-        //create verification token
-        Account account = event.getAccount();
-        String token = UUID.randomUUID().toString();
-        accountService.createVerificationToken(account, token);
-        //get email properties
-        String recipientAddress = account.getEmail();
-        String subject = "Account Confirmation";
-        String confirmationUrl = event.getAppUrl() + "/accountConfirm?token=" + token;
-        String message = "Please confirm:";
-        //send email
-        SimpleMailMessage email = new SimpleMailMessage();
-        email.setTo(recipientAddress);
-        email.setSubject(subject);
-        email.setText(message + "\r\n" + serverUrl + confirmationUrl);
-        mailSender.send(email);
+  private void confirmCreateAccount(OnCreateAccountEvent event) {
+    //get the account
+    //create verification token
+    Account account = event.getAccount();
+    String token = UUID.randomUUID().toString();
+    accountService.createVerificationToken(account, token);
+    //get email properties
+    String recipientAddress = account.getEmail();
+    String subject = "Account Confirmation";
+    String confirmationUrl = event.getAppUrl() + "/accountConfirm?token=" + token;
+    String message = "Please confirm:";
+    //send email
+    SimpleMailMessage email = new SimpleMailMessage();
+    email.setTo(recipientAddress);
+    email.setSubject(subject);
+    email.setText(message + "\r\n" + serverUrl + confirmationUrl);
+    mailSender.send(email);
 
-    }
+  }
 }

@@ -16,45 +16,49 @@ import java.util.List;
 @Service
 public class AccountServiceImpl implements AccountService {
 
-    @Autowired
-    private AccountRepository accountRepository;
+  private final AccountRepository accountRepository;
 
-    @Override
-    public Account create(Account account) {
-        return accountRepository.create(account);
+  @Autowired
+  public AccountServiceImpl(AccountRepository accountRepository) {
+    this.accountRepository = accountRepository;
+  }
+
+  @Override
+  public Account create(Account account) {
+    return accountRepository.create(account);
+  }
+
+  @Override
+  public void createVerificationToken(Account account, String token) {
+    VerificationToken verificationToken = new VerificationToken();
+    verificationToken.setToken(token);
+    verificationToken.setUsername(account.getUsername());
+
+    accountRepository.saveToken(verificationToken);
+  }
+
+  @Override
+  public void confirmAccount(String token) {
+    //retrieve token
+    VerificationToken verificationToken = accountRepository.findByToken(token);
+    //verify date
+    if (verificationToken.getExpiryDate().after(new Date())) {
+      //move from account table to userdetails table
+      Account account = accountRepository.findByUsername(verificationToken.getUsername());
+      //create user details
+      List<GrantedAuthority> authorities = new ArrayList<>();
+      authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+      ConferenceUserDetails userDetails =
+          new ConferenceUserDetails(account.getUsername(),
+              account.getPassword(),
+              authorities);
+      accountRepository.createUserDetails(userDetails);
+      accountRepository.createAuthorities(userDetails);
+      //delete from accounts
+      accountRepository.delete(account);
+      //delete from tokens
+      accountRepository.deleteToken(token);
     }
-
-    @Override
-    public void createVerificationToken(Account account, String token) {
-        VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setToken(token);
-        verificationToken.setUsername(account.getUsername());
-
-        accountRepository.saveToken(verificationToken);
-    }
-
-    @Override
-    public void confirmAccount(String token) {
-        //retrieve token
-        VerificationToken verificationToken = accountRepository.findByToken(token);
-        //verify date
-        if(verificationToken.getExpiryDate().after(new Date())) {
-            //move from account table to userdetails table
-            Account account = accountRepository.findByUsername(verificationToken.getUsername());
-            //create user details
-            List<GrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-
-            ConferenceUserDetails userDetails =
-                    new ConferenceUserDetails(account.getUsername(),
-                            account.getPassword(),
-                            authorities);
-            accountRepository.createUserDetails(userDetails);
-            accountRepository.createAuthorities(userDetails);
-            //delete from accounts
-            accountRepository.delete(account);
-            //delete from tokens
-            accountRepository.deleteToken(token);
-        }
-    }
+  }
 }

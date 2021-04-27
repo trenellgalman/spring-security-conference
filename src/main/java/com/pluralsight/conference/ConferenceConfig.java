@@ -17,41 +17,41 @@ import java.util.Locale;
 @Configuration
 public class ConferenceConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addViewControllers(final ViewControllerRegistry registry) {
-        registry.addViewController("/login");
-    }
+  @Override
+  public void addViewControllers(final ViewControllerRegistry registry) {
+    registry.addViewController("/login");
+  }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/files/**")
-                .addResourceLocations("/WEB-INF/pdf/");
-    }
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry.addResourceHandler("/files/**")
+        .addResourceLocations("/WEB-INF/pdf/");
+  }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(localeChangeInterceptor());
-    }
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(localeChangeInterceptor());
+  }
 
-    @Bean
-    public LocaleResolver localeResolver() {
-        SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.US);
-        return slr;
-    }
+  @Bean
+  public LocaleResolver localeResolver() {
+    SessionLocaleResolver slr = new SessionLocaleResolver();
+    slr.setDefaultLocale(Locale.US);
+    return slr;
+  }
 
-    @Bean
-    public LocaleChangeInterceptor localeChangeInterceptor() {
-        LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
-        lci.setParamName("lang");
-        return lci;
-    }
+  @Bean
+  public LocaleChangeInterceptor localeChangeInterceptor() {
+    LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
+    lci.setParamName("lang");
+    return lci;
+  }
 
-    @Bean
-    public ViewResolver viewResolver() {
-        InternalResourceViewResolver bean = new InternalResourceViewResolver();
-        bean.setPrefix("/WEB-INF/jsp/");
-        bean.setSuffix(".jsp");
-        return bean;
-    }
+  @Bean
+  public ViewResolver viewResolver() {
+    InternalResourceViewResolver bean = new InternalResourceViewResolver();
+    bean.setPrefix("/WEB-INF/jsp/");
+    bean.setSuffix(".jsp");
+    return bean;
+  }
 }

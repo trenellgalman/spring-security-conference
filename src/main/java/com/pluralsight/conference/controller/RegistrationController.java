@@ -1,6 +1,7 @@
 package com.pluralsight.conference.controller;
 
 import com.pluralsight.conference.model.Registration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -11,31 +12,29 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
 
+@Slf4j
 @Controller
 public class RegistrationController {
 
-    @GetMapping("registration")
-    public String getRegistration(@ModelAttribute ("registration")Registration registration) {
-        return "registration";
+  @GetMapping("registration")
+  public String getRegistration(@ModelAttribute("registration") Registration registration) {
+    return "registration";
+  }
+
+  @PostMapping("registration")
+  @Secured("ROLE_USER")
+  public String addRegistration(@Valid @ModelAttribute("registration") Registration registration,
+      BindingResult result,
+      Authentication auth) {
+    log.info("Auth: {}", auth.getPrincipal());
+
+    if (result.hasErrors()) {
+      log.info("There were errors");
+      return "registration";
     }
 
-    @PostMapping("registration")
-    @Secured("ROLE_USER")
-    public String addRegistration(@Valid @ModelAttribute ("registration")
-                                              Registration registration,
-                                  BindingResult result,
-                                  Authentication auth) {
+    log.info("Registration: {}", registration.getName());
 
-        System.out.println("Auth: " + auth.getPrincipal());
-
-        if(result.hasErrors()) {
-            System.out.println("There were errors");
-            return "registration";
-        }
-
-        System.out.println("Registration: " + registration.getName());
-
-        return "redirect:registration";
-    }
-
+    return "redirect:registration";
+  }
 }

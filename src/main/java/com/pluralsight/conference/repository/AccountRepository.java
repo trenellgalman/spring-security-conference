@@ -3,24 +3,22 @@ package com.pluralsight.conference.repository;
 import com.pluralsight.conference.model.Account;
 import com.pluralsight.conference.model.ConferenceUserDetails;
 import com.pluralsight.conference.model.VerificationToken;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.List;
 
 public interface AccountRepository {
-    public Account create (Account account);
 
-    void saveToken(VerificationToken verificationToken);
+  Account create(Account account);
 
-    VerificationToken findByToken(String token);
+  void saveToken(VerificationToken verificationToken);
 
-    Account findByUsername(String username);
+  VerificationToken findByToken(String token);
 
-    void createUserDetails(ConferenceUserDetails userDetails);
+  Account findByUsername(String username);
 
-    void createAuthorities(ConferenceUserDetails userDetails);
+  void createUserDetails(ConferenceUserDetails userDetails);
 
-    void delete(Account account);
+  void createAuthorities(ConferenceUserDetails userDetails);
 
-    void deleteToken(String token);
+  void delete(Account account);
+
+  void deleteToken(String token);
 }
